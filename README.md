@@ -10,6 +10,12 @@ playing in mpd embedded into.
 * mpc
 * wget
 
+## Install
+
+Just install the needed dependencies and clone this repository
+Then copy config.example to $HOME/.config/kava/config
+and edit it to your liking
+
 ## Usage:
 
 Simply run "kava" - it will change background on each track change.
