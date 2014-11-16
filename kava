@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source $HOME/.config/kava/config
+
 getCover () {
     cover=$(get-cover "$(mpc current -f %artist%)" "$(mpc current -f %album%)")
     cd "$mpdpath"/"$dir"
@@ -7,15 +9,15 @@ getCover () {
     if [[ $(file --mime-type cover | awk '{ print $NF }') == "image/png" ]]; then
         mv cover cover.png
         cp cover.png /tmp/cover.png
-        mogrify -resize 300x300 /tmp/cover.png
-        convert -size 1920x1080 xc:black -page +1600+30 /tmp/cover.png -layers flatten ~/background.png
+        mogrify -resize "$size" /tmp/cover.png
+        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten ~/background.png
         feh --bg-scale ~/background.png
         rm /tmp/cover.png
     elif [[ $(file --mime-type cover | awk '{ print $NF }') == "image/jpg" ]]; then
         mv cover cover.jpg
         cp cover.jpg /tmp/cover.jpg
-        mogrify -resize 300x300 /tmp/cover.jpg
-        convert -size 1920x1080 xc:black -page +1600+30 /tmp/cover.jpg -layers flatten ~/background.png
+        mogrify -resize "$size" /tmp/cover.jpg
+        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten ~/background.png
         feh --bg-scale ~/background.png
         rm /tmp/cover.jpg
     else
@@ -32,25 +34,25 @@ main () {
     if [[ -z $(mpc current) ]]; then
         xsetroot -solid "#000000"
     else
-        mpdpath="/mnt/wasteland/Audio/Rips"
         dir="$(dirname "$(mpc current --format %file%)")"
         cd "$mpdpath"/"$dir"
         if [[ -a cover.png ]]; then
             cp cover.png /tmp/cover.png
-            mogrify -resize 300x300 /tmp/cover.png
-            convert -size 1920x1080 xc:black -page +1600+30 /tmp/cover.png -layers flatten ~/background.png
+            mogrify -resize "$size" /tmp/cover.png
+            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten ~/background.png
             feh --bg-scale ~/background.png
             rm /tmp/cover.png
         elif [[ -a folder.jpg ]]; then
-            cp folder.jpg /tmp/cover.jpg
-            mogrify -resize 300x300 /tmp/cover.jpg
-            convert -size 1920x1080 xc:black -page +1600+30 /tmp/cover.jpg -layers flatten ~/background.png
+            mv folder.jpg cover.jpg
+            cp cover.jpg /tmp/cover.jpg
+            mogrify -resize "$size" /tmp/cover.jpg
+            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten ~/background.png
             feh --bg-scale ~/background.png
             rm /tmp/cover.jpg
         elif [[ -a cover.jpg ]]; then
             cp cover.jpg /tmp/cover.jpg
-            mogrify -resize 300x300 /tmp/cover.jpg
-            convert -size 1920x1080 xc:black -page +1600+30 /tmp/cover.jpg -layers flatten ~/background.png
+            mogrify -resize "$size" /tmp/cover.jpg
+            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten ~/background.png
             feh --bg-scale ~/background.png
             rm /tmp/cover.jpg
         else
@@ -64,7 +66,6 @@ reset () {
     if [[ -z $(mpc current) ]]; then
         xsetroot -solid "#000000"
     else
-        mpdpath="/mnt/wasteland/Audio/Rips"
         dir="$(dirname "$(mpc current --format %file%)")"
         cd "$mpdpath"/"$dir"
         rm -f cover.png folder.jpg cover.png folder.png

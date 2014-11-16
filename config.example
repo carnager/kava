@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# music directory has to match setting in mpd.conf
+mpdpath=/path/to/music_directory
+
+# resolution of wallpaper
+res="1920x1080"
+
+# main image to embedded cover into
+image="xc:black"
+
+# size of cover image
+size="300x300"
+
+# placement of image in wallpaper
+coordinates="+1600+30"
