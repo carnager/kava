@@ -36,7 +36,9 @@ main () {
     sleep 1
 
     if [[ -z $(mpc current) ]]; then
-        xsetroot -solid "#000000"
+        convert -resize "$size" "$noimage" /tmp/cover.png
+        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten "$wallpaper"
+        feh --bg-scale "$wallpaper"
     else
         dir="$(dirname "$(mpc current --format %file%)")"
         cd "$mpdpath"/"$dir"
@@ -73,8 +75,21 @@ reset () {
     else
         dir="$(dirname "$(mpc current --format %file%)")"
         cd "$mpdpath"/"$dir"
-        rm -f cover.png folder.jpg cover.png folder.png
+        mv folder.jpg cover.jpg
+        mv folder.png cover.png
+        mv cover.png cover.png.bak
+        mv cover.jpg cover.jpg.bak
         getCover
+        if [[ -a cover.png ]]; then
+            rm -f cover.png.bak
+        else
+            rename .png.bak '.png' *.bak
+        fi
+        if [[ -a cover.jpg ]]; then
+            rm -f cover.jpg.bak
+        else
+            rename .jpg.bak '.jpg' *.bak
+        fi
     fi
 }
 
