@@ -10,18 +10,20 @@ getCover () {
         mv cover cover.png
         cp cover.png /tmp/cover.png
         mogrify -resize "$size" /tmp/cover.png
-        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten ~/background.png
-        feh --bg-scale ~/background.png
+        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten "$wallpaper"
+        feh --bg-scale "$wallpaper"
         rm /tmp/cover.png
     elif [[ $(file --mime-type cover | awk '{ print $NF }') == "image/jpg" ]]; then
         mv cover cover.jpg
         cp cover.jpg /tmp/cover.jpg
         mogrify -resize "$size" /tmp/cover.jpg
-        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten ~/background.png
-        feh --bg-scale ~/background.png
+        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten "$wallpaper"
+        feh --bg-scale "$wallpaper"
         rm /tmp/cover.jpg
     else
         echo "no cover"
+        convert -size "$res" "$image" -page "$coordinates" "$noimage" -layers "$wallpaper"
+        feh --bg-scale "$wallpaper"
     fi
 }
 
@@ -39,21 +41,21 @@ main () {
         if [[ -a cover.png ]]; then
             cp cover.png /tmp/cover.png
             mogrify -resize "$size" /tmp/cover.png
-            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten ~/background.png
-            feh --bg-scale ~/background.png
+            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten "$wallpaper"
+            feh --bg-scale "$wallpaper"
             rm /tmp/cover.png
         elif [[ -a folder.jpg ]]; then
             mv folder.jpg cover.jpg
             cp cover.jpg /tmp/cover.jpg
             mogrify -resize "$size" /tmp/cover.jpg
-            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten ~/background.png
-            feh --bg-scale ~/background.png
+            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten "$wallpaper"
+            feh --bg-scale "$wallpaper"
             rm /tmp/cover.jpg
         elif [[ -a cover.jpg ]]; then
             cp cover.jpg /tmp/cover.jpg
             mogrify -resize "$size" /tmp/cover.jpg
-            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten ~/background.png
-            feh --bg-scale ~/background.png
+            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten "$wallpaper"
+            feh --bg-scale "$wallpaper"
             rm /tmp/cover.jpg
         else
             getCover
@@ -64,7 +66,8 @@ main () {
 
 reset () {
     if [[ -z $(mpc current) ]]; then
-        xsetroot -solid "#000000"
+        convert -size "$res" "$image" -page "$coordinates" "$noimage" -layers "$wallpaper"
+        feh --bg-scale "$wallpaper"
     else
         dir="$(dirname "$(mpc current --format %file%)")"
         cd "$mpdpath"/"$dir"

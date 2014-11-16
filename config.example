@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # music directory has to match setting in mpd.conf
-mpdpath=/path/to/music_directory
+mpdpath=/path/to/music
+
+# where to save wallpaper
+wallpaper="$HOME/.config/kava/wallpaper"
 
 # resolution of wallpaper
 res="1920x1080"
@@ -14,3 +17,8 @@ size="300x300"
 
 # placement of image in wallpaper
 coordinates="+1600+30"
+
+# image to use, if no cover is found
+noimage="xc:black"
+
+
