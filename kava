@@ -2,14 +2,63 @@
 
 source $HOME/.config/kava/config
 
+feh --bg-scale "$image"
+cp "$image" $HOME/.config/kava/wally_temp.jpg
+image_temp="$HOME/.config/kava/wally_temp.jpg"
+
+main () {
+while true; do
+    current="$(mpc current --format '%artist% - %album%')"
+    for ((i=0; i < ${#coordinates[@]}; i++)); do
+        mpc idle player>/dev/null 2>&1
+        sleep 1
+        if [[ -z $(mpc current) ]]; then
+            :
+#            convert -resize "$size" "$noimage" -bordercolor snow -background black -polaroid "$angle" /tmp/cover.png
+#            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten "$wallpaper"
+#            feh --bg-scale "$wallpaper"
+        elif [[ $(mpc current --format '%artist% - %album%') == "$current" ]]; then
+            :
+        else
+            dir="$(dirname "$(mpc current --format %file%)")"
+            cd "$mpdpath"/"$dir"
+            if [[ -a cover.png ]]; then
+                echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" found, setting wallpaper..."
+                cp cover.png /tmp/cover.png
+                mogrify -resize "$size" -bordercolor snow -background black +polaroid /tmp/cover.png
+                convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
+                feh --bg-scale "$wallpaper"
+                cp "$wallpaper" "$image_temp"
+                rm /tmp/cover.png
+            elif [[ -a folder.jpg ]]; then
+                convert folder.jpg /tmp/cover.png
+                mogrify -resize "$size" -bordercolor snow -background black +polaroid /tmp/cover.png
+                convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
+                feh --bg-scale "$wallpaper"
+                cp "$wallpaper" "$image_temp"
+            elif [[ -a cover.jpg ]]; then
+                convert cover.jpg /tmp/cover.png
+                mogrify -resize "$size" -bordercolor snow -background black +polaroid /tmp/cover.png
+                convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
+                feh --bg-scale "$wallpaper"
+                cp "$wallpaper" "$image_temp"
+            else
+                getCover
+            fi
+        fi
+    done
+done
+}
+
 getCover () {
     cover=$(get-cover "$(mpc current -f %artist%)" "$(mpc current -f %album%)")
     cd "$mpdpath"/"$dir"
     if [[ $cover == "Fetch error." ]]; then
         echo "...could not download cover for \""$(mpc current -f '%artist% - %album%')"\", setting placeholder image..."
-        convert -resize "$size" "$noimage" /tmp/cover.png
-        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten "$wallpaper"
+        convert -resize "$size" "$noimage" -bordercolor snow -background black -polaroid "$angle" /tmp/cover.png
+        convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
         feh --bg-scale "$wallpaper"
+        cp "$wallpaper" "$image_temp"
     else
         echo "...found cover, setting wallpaper"
         wget "$cover" -O cover>/dev/null 2>&1
@@ -17,64 +66,22 @@ getCover () {
     if [[ $(file --mime-type cover | awk '{ print $NF }') == "image/png" ]]; then
         mv cover cover.png
         cp cover.png /tmp/cover.png
-        mogrify -resize "$size" /tmp/cover.png
-        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten "$wallpaper"
+        mogrify -resize "$size" -bordercolor snow -background black -polaroid "$angle" /tmp/cover.png
+        convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
         feh --bg-scale "$wallpaper"
+        cp "$wallpaper" "$image_temp"
+
         rm /tmp/cover.png
     elif [[ $(file --mime-type cover | awk '{ print $NF }') == "image/jpeg" ]]; then
         mv cover cover.jpg
-        cp cover.jpg /tmp/cover.jpg
-        mogrify -resize "$size" /tmp/cover.jpg
-        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten "$wallpaper"
+        convert cover.jpg /tmp/cover.png
+        mogrify -resize "$size" -bordercolor snow -background black -polaroid "$angle" /tmp/cover.png
+        convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
         feh --bg-scale "$wallpaper"
-        rm /tmp/cover.jpg
+        cp "$wallpaper" "$image_temp"
+
+        rm /tmp/cover.png
     fi
-}
-
-
-main () {
-    while true; do
-        current="$(mpc current)"
-        mpc idle player>/dev/null 2>&1
-    sleep 1
-
-    if [[ -z $(mpc current) ]]; then
-        convert -resize "$size" "$noimage" /tmp/cover.png
-        convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten "$wallpaper"
-        feh --bg-scale "$wallpaper"
-    elif [[ $(mpc current) == "$current" ]]; then
-        :
-    else
-        dir="$(dirname "$(mpc current --format %file%)")"
-        cd "$mpdpath"/"$dir"
-        if [[ -a cover.png ]]; then
-            echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" found, setting wallpaper..."
-            cp cover.png /tmp/cover.png
-            mogrify -resize "$size" /tmp/cover.png
-            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.png -layers flatten "$wallpaper"
-            feh --bg-scale "$wallpaper"
-            rm /tmp/cover.png
-        elif [[ -a folder.jpg ]]; then
-            echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" found, setting wallpaper..."
-            mv folder.jpg cover.jpg
-            cp cover.jpg /tmp/cover.jpg
-            mogrify -resize "$size" /tmp/cover.jpg
-            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten "$wallpaper"
-            feh --bg-scale "$wallpaper"
-            rm /tmp/cover.jpg
-        elif [[ -a cover.jpg ]]; then
-            echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" found, setting wallpaper..."
-            cp cover.jpg /tmp/cover.jpg
-            mogrify -resize "$size" /tmp/cover.jpg
-            convert -size "$res" "$image" -page "$coordinates" /tmp/cover.jpg -layers flatten "$wallpaper"
-            feh --bg-scale "$wallpaper"
-            rm /tmp/cover.jpg
-        else
-            echo "No cover found for \""$(mpc current -f '%artist% - %album%')"\", trying to download..."
-            getCover
-        fi
-    fi
-    done
 }
 
 reset () {
@@ -107,3 +114,4 @@ if [[ $1 == reset ]]; then
 else
     main
 fi
+
