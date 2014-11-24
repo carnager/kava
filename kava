@@ -98,8 +98,7 @@ getCover () {
 
 reset () {
     if [[ -z $(mpc current) ]]; then
-        convert -size "$res" "$image" -page "$coordinates" "$noimage" -layers "$wallpaper"
-        feh --bg-scale "$wallpaper"
+        echo "No song playing, skipping"
     else
         dir="$(dirname "$(mpc current --format %file%)")"
         cd "$mpdpath"/"$dir"
