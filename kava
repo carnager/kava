@@ -9,8 +9,8 @@ cp "$image" $HOME/.config/kava/wally_temp.jpg
 image_temp="$HOME/.config/kava/wally_temp.jpg"
 
 while true; do
-    current="$(mpc current --format '%artist% - %album%')"
     for ((i=0; i < ${#coordinates[@]}; i++)); do
+        current="$(mpc current --format '%artist% - %album%')"
         mpc idle player>/dev/null 2>&1
         sleep 1
         if [[ -z $(mpc current) ]]; then
