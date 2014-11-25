@@ -41,9 +41,8 @@ while true; do
                 echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" found, setting wallpaper..."
                 wallpaper
             elif [[ -a folder.jpg ]]; then
-                convert folder.jpg cover.png
                 rm -f folder.jpg
-                wallpaper
+                getCover
             elif [[ -a cover.jpg ]]; then
                 convert cover.jpg cover.png
                 rm -f cover.jpg
@@ -56,7 +55,6 @@ done
 }
 
 getCover () {
-    index=$index
         if [[ $1 == "noset" ]]; then
         cover=$(get-cover "$(mpc current -f %artist%)" "$(mpc current -f %album%)")
         cd "$mpdpath"/"$dir"
@@ -74,14 +72,14 @@ getCover () {
     else
         cover=$(get-cover "$(mpc current -f %artist%)" "$(mpc current -f %album%)")
         cd "$mpdpath"/"$dir"
-        if [[ $cover == "Fetch error." ]]; then
-            echo "...could not download cover for \""$(mpc current -f '%artist% - %album%')"\", setting placeholder image..."
-            convert -resize "$size" "$noimage" -bordercolor snow -background black -polaroid "$angle" /tmp/cover.png
-            convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
-            feh --bg-scale "$wallpaper"
-            cp "$wallpaper" "$image_temp"
-            index_adv
-        else
+        if [[ $cover != "Fetch error." ]]; then
+#            echo "...could not download cover for \""$(mpc current -f '%artist% - %album%')"\", setting placeholder image..."
+#            convert -resize "$size" "$noimage" -bordercolor snow -background black -polaroid "$angle" /tmp/cover.png
+#            convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
+#            feh --bg-scale "$wallpaper"
+#            cp "$wallpaper" "$image_temp"
+#            index_adv
+#        else
             echo "...found cover, setting wallpaper"
             wget "$cover" -O cover>/dev/null 2>&1
         fi
@@ -103,8 +101,7 @@ reset () {
     else
         dir="$(dirname "$(mpc current --format %file%)")"
         cd "$mpdpath"/"$dir"
-        mv folder.jpg cover.jpg>/dev/null 2>&1
-        mv folder.png cover.png>/dev/null 2>&1
+        rm -f folder.jpg
         mv cover.png cover.png.bak>/dev/null 2>&1
         mv cover.jpg cover.jpg.bak>/dev/null 2>&1
         getCover noset
