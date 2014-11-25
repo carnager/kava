@@ -1,8 +1,6 @@
 #!/bin/bash
 
 source $HOME/.config/kava/config
-index=0
-nelem="${#coordinates[@]}"
 
 index_adv () {
     if ((index < nelem)); then
@@ -19,10 +17,12 @@ wallpaper () {
     convert -size "$res" "$image_temp" -page ${coordinates[$index]} /tmp/cover.png -layers flatten "$wallpaper"
     feh --bg-scale "$wallpaper"
     cp "$wallpaper" "$image_temp"
-    index_adv
 }
 
 main () {
+local index=0
+local nelem="${#coordinates[@]}"
+
 feh --bg-scale "$image"
 cp "$image" $HOME/.config/kava/wally_temp.jpg
 image_temp="$HOME/.config/kava/wally_temp.jpg"
@@ -40,6 +40,7 @@ while true; do
 
             if [[ -a cover.png ]]; then
                 wallpaper
+                index_adv
             elif [[ -a folder.jpg ]]; then
                 rm -f folder.jpg
                 getCover
@@ -47,6 +48,7 @@ while true; do
                 convert cover.jpg cover.png
                 rm -f cover.jpg
                 wallpaper
+                index_adv
             else
                 echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" not found, trying to download..."
                 getCover
@@ -74,17 +76,18 @@ getCover () {
         cover=$(get-cover "$(mpc current -f %artist%)" "$(mpc current -f %album%)")
         cd "$mpdpath"/"$dir"
         if [[ $cover != "Fetch error." ]]; then
-            echo "...found cover, setting wallpaper"
             wget "$cover" -O cover>/dev/null 2>&1
         fi
         if [[ $(file --mime-type cover | awk '{ print $NF }') == "image/png" ]]; then
             mv cover cover.png
             wallpaper
+            index_adv
         elif [[ $(file --mime-type cover | awk '{ print $NF }') == "image/jpeg" ]]; then
             mv cover cover.jpg
             convert cover.jpg cover.png
             rm -f cover.jpg
             wallpaper
+            index_adv
         fi
     fi
 }
