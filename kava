@@ -1,7 +1,8 @@
 #!/bin/bash
 
 source $HOME/.config/kava/config
-
+index=0
+nelem="${#coordinates[@]}"
 
 main () {
 feh --bg-scale "$image"
@@ -9,42 +10,54 @@ cp "$image" $HOME/.config/kava/wally_temp.jpg
 image_temp="$HOME/.config/kava/wally_temp.jpg"
 
 while true; do
-    for ((i=0; i < ${#coordinates[@]}; i++)); do
         current="$(mpc current --format '%artist% - %album%')"
         mpc idle player>/dev/null 2>&1
         sleep 1
         if [[ -z $(mpc current) ]]; then
             :
-        elif [[ $(mpc current --format '%artist% - %album%') == "$current" ]]; then
-            :
-        else
+        elif [[ $(mpc current --format '%artist% - %album%') != "$current" ]]; then
             dir="$(dirname "$(mpc current --format %file%)")"
             cd "$mpdpath"/"$dir"
             if [[ -a cover.png ]]; then
                 echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" found, setting wallpaper..."
                 cp cover.png /tmp/cover.png
                 mogrify -resize "$size" -bordercolor snow -background black +polaroid /tmp/cover.png
-                convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
+                convert -size "$res" "$image_temp" -page ${coordinates[$index]} /tmp/cover.png -layers flatten "$wallpaper"
                 feh --bg-scale "$wallpaper"
                 cp "$wallpaper" "$image_temp"
                 rm /tmp/cover.png
+                if ((index < nelem)); then
+                    ((index++))
+                else
+                    index=0
+                fi
             elif [[ -a folder.jpg ]]; then
                 convert folder.jpg /tmp/cover.png
                 mogrify -resize "$size" -bordercolor snow -background black +polaroid /tmp/cover.png
-                convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
+                convert -size "$res" "$image_temp" -page ${coordinates[$index]} /tmp/cover.png -layers flatten "$wallpaper"
                 feh --bg-scale "$wallpaper"
                 cp "$wallpaper" "$image_temp"
+                if ((index < nelem)); then
+                    ((index++))
+                else
+                    index=0
+                fi
+
             elif [[ -a cover.jpg ]]; then
                 convert cover.jpg /tmp/cover.png
                 mogrify -resize "$size" -bordercolor snow -background black +polaroid /tmp/cover.png
-                convert -size "$res" "$image_temp" -page ${coordinates[$i]} /tmp/cover.png -layers flatten "$wallpaper"
+                convert -size "$res" "$image_temp" -page ${coordinates[$index]} /tmp/cover.png -layers flatten "$wallpaper"
                 feh --bg-scale "$wallpaper"
                 cp "$wallpaper" "$image_temp"
+                if ((index < nelem)); then
+                    ((index++))
+                else
+                    index=0
+                fi
             else
                 getCover
             fi
         fi
-    done
 done
 }
 
