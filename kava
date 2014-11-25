@@ -3,7 +3,7 @@
 source $HOME/.config/kava/config
 
 index_adv () {
-    if ((index < nelem)); then
+    if ((index < ( nelem - 1 ))); then
         ((index++))
         else
             index=0
