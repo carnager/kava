@@ -15,9 +15,6 @@ image="xc:black"
 # size of cover image
 size="300x300"
 
-# image to use, if no cover is found
-noimage="xc:black"
-
 # placement of images, if defining several values kava will itterate through
 # them with each new song.
 # this example should be fine on a 1920x1080 monitor
