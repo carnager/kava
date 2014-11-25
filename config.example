@@ -10,7 +10,7 @@ wallpaper="$HOME/.config/kava/wallpaper"
 res="1920x1080"
 
 # main image to embedded cover into
-image="xc:black"
+image="/path/to/image"
 
 # size of cover image
 size="300x300"
