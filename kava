@@ -43,6 +43,7 @@ while true; do
                 index_adv
             elif [[ -a folder.jpg ]]; then
                 rm -f folder.jpg
+                echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" not found, trying to download..."
                 getCover
             elif [[ -a cover.jpg ]]; then
                 convert cover.jpg cover.png
