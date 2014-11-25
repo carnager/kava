@@ -29,3 +29,5 @@ Also i convert cover.jpg to cover.png, because transparency is needed for
 this particular use-case.
 While this could be done in a termporary file, I just chose to just convert
 the actual cover file. This way the conversion is a one-time thing.
+
+![](kava.jpg)
