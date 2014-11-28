@@ -7,7 +7,8 @@ mpdpath=/path/to/music
 artist=albumartist
 
 # set these albumartists to "Various Artists"
-# useful, if you use several albumartists like "Soundtrack" or "Tribute"
+# useful, if you use several VA albumartists like "Soundtrack" or "Tribute"
+# since cover download sites seem to expect a certain value
 various=( "Tribute" "Sampler" "Soundtrack" "Split" )
 
 # where to save wallpaper
