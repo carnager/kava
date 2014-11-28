@@ -31,7 +31,12 @@ image_temp="$HOME/.config/kava/wally_temp.jpg"
 
 
 while true; do
+        if [[ $stopped == true ]]; then
+            export current="$current"
+            export stopped=false
+        else
         current="$(mpc current --format "%$artist% - %album%")"
+        fi
         if [[ "$artist" == "albumartist" ]]; then
             found=0; for i in "${various[@]}"; do
             if [[ $i = "$(mpc current --format %"$artist"%)" ]]; then
@@ -41,7 +46,7 @@ while true; do
         mpc idle player>/dev/null 2>&1
         sleep 1
         if [[ -z $(mpc current) ]]; then
-            :
+            export stopped=true
         elif [[ $(mpc current --format "%$artist% - %album%") != "$current" ]]; then
             dir="$(dirname "$(mpc current --format %file%)")"
             cd "$mpdpath"/"$dir"
