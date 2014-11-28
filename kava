@@ -10,6 +10,8 @@ index_adv () {
     fi
 }
 
+inarray() { local n=$1 h; shift; for h; do [[ $n = "$h" ]] && return; done; return 1; }
+
 wallpaper () {
     echo "Cover for \""$(mpc current -f "%$artist% - %album%")"\" found, setting wallpaper..."
     cp cover.png /tmp/cover.png
@@ -30,6 +32,12 @@ image_temp="$HOME/.config/kava/wally_temp.jpg"
 
 while true; do
         current="$(mpc current --format "%$artist% - %album%")"
+        if [[ "$artist" == "albumartist" ]]; then
+            found=0; for i in "${various[@]}"; do
+            if [[ $i = "$(mpc current --format %"$artist"%)" ]]; then
+                export current="Various Artists - $(mpc current --format %album%)"; export VA=true; break; fi; done
+#            inarray "$(mpc current --format %"$artist"%)" "${array[@]}"
+        fi
         mpc idle player>/dev/null 2>&1
         sleep 1
         if [[ -z $(mpc current) ]]; then
@@ -60,7 +68,11 @@ done
 
 getCover () {
         if [[ $1 == "noset" ]]; then
-        cover=$(get-cover "$(mpc current -f %"$artist"%)" "$(mpc current -f %album%)")
+            if [[ $VA == true ]]; then
+                cover=$(get-cover "Various Artists" "$(mpc current -f %album%)")
+            else
+                cover=$(get-cover "$(mpc current -f %"$artist"%)" "$(mpc current -f %album%)")
+            fi
         cd "$mpdpath"/"$dir"
         if [[ $cover == "Fetch error." ]]; then
             echo "...could not download cover for \""$(mpc current -f "%$artist% - %album%")"\", skipping..."
@@ -74,7 +86,11 @@ getCover () {
             mv cover cover.jpg
         fi
     else
-        cover=$(get-cover "$(mpc current -f %"$artist"%)" "$(mpc current -f %album%)")
+        if [[ $VA == true ]]; then
+            cover=$(get-cover "Various Artists" "$(mpc current -f %album%)")
+        else
+            cover=$(get-cover "$(mpc current -f %"$artist"%)" "$(mpc current -f %album%)")
+        fi
         cd "$mpdpath"/"$dir"
         if [[ $cover != "Fetch error." ]]; then
             wget "$cover" -O cover>/dev/null 2>&1

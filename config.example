@@ -6,6 +6,10 @@ mpdpath=/path/to/music
 # prefer albumartist or artist?
 artist=albumartist
 
+# set these albumartists to "Various Artists"
+# useful, if you use several albumartists like "Soundtrack" or "Tribute"
+various=( "Tribute" "Sampler" "Soundtrack" "Split" )
+
 # where to save wallpaper
 wallpaper="$HOME/.config/kava/wallpaper"
 
