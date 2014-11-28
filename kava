@@ -11,7 +11,7 @@ index_adv () {
 }
 
 wallpaper () {
-    echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" found, setting wallpaper..."
+    echo "Cover for \""$(mpc current -f "%$artist% - %album%")"\" found, setting wallpaper..."
     cp cover.png /tmp/cover.png
     mogrify -resize "$size" -bordercolor snow -background black +polaroid /tmp/cover.png
     convert -size "$res" "$image_temp" -page ${coordinates[$index]} /tmp/cover.png -layers flatten "$wallpaper"
@@ -29,12 +29,12 @@ image_temp="$HOME/.config/kava/wally_temp.jpg"
 
 
 while true; do
-        current="$(mpc current --format '%artist% - %album%')"
+        current="$(mpc current --format "%$artist% - %album%")"
         mpc idle player>/dev/null 2>&1
         sleep 1
         if [[ -z $(mpc current) ]]; then
             :
-        elif [[ $(mpc current --format '%artist% - %album%') != "$current" ]]; then
+        elif [[ $(mpc current --format "%$artist% - %album%") != "$current" ]]; then
             dir="$(dirname "$(mpc current --format %file%)")"
             cd "$mpdpath"/"$dir"
 
@@ -43,7 +43,7 @@ while true; do
                 index_adv
             elif [[ -a folder.jpg ]]; then
                 rm -f folder.jpg
-                echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" not found, trying to download..."
+                echo "Cover for \""$(mpc current -f "%$artist% - %album%")"\" not found, trying to download..."
                 getCover
             elif [[ -a cover.jpg ]]; then
                 convert cover.jpg cover.png
@@ -51,7 +51,7 @@ while true; do
                 wallpaper
                 index_adv
             else
-                echo "Cover for \""$(mpc current -f '%artist% - %album%')"\" not found, trying to download..."
+                echo "Cover for \""$(mpc current -f "%$artist% - %album%")"\" not found, trying to download..."
                 getCover
             fi
         fi
@@ -60,10 +60,10 @@ done
 
 getCover () {
         if [[ $1 == "noset" ]]; then
-        cover=$(get-cover "$(mpc current -f %artist%)" "$(mpc current -f %album%)")
+        cover=$(get-cover "$(mpc current -f %"$artist"%)" "$(mpc current -f %album%)")
         cd "$mpdpath"/"$dir"
         if [[ $cover == "Fetch error." ]]; then
-            echo "...could not download cover for \""$(mpc current -f '%artist% - %album%')"\", skipping..."
+            echo "...could not download cover for \""$(mpc current -f "%$artist% - %album%")"\", skipping..."
         else
             echo "...found cover, saving"
             wget "$cover" -O cover>/dev/null 2>&1
@@ -74,7 +74,7 @@ getCover () {
             mv cover cover.jpg
         fi
     else
-        cover=$(get-cover "$(mpc current -f %artist%)" "$(mpc current -f %album%)")
+        cover=$(get-cover "$(mpc current -f %"$artist"%)" "$(mpc current -f %album%)")
         cd "$mpdpath"/"$dir"
         if [[ $cover != "Fetch error." ]]; then
             wget "$cover" -O cover>/dev/null 2>&1
@@ -103,15 +103,12 @@ reset () {
         mv cover.png cover.png.bak>/dev/null 2>&1
         mv cover.jpg cover.jpg.bak>/dev/null 2>&1
         getCover noset
-        if [[ -a cover.png ]]; then
+        if [[ -a cover.png || cover.jpg ]]; then
             rm -f cover.png.bak
-        else
-            rename .png.bak '.png' *.bak
-        fi
-        if [[ -a cover.jpg ]]; then
             rm -f cover.jpg.bak
         else
-            rename .jpg.bak '.jpg' *.bak
+            mv cover.png.bak cover.png
+            mv cover.jpg.bak cover.jpg
         fi
     fi
 }

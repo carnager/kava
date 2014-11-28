@@ -3,6 +3,9 @@
 # music directory has to match setting in mpd.conf
 mpdpath=/path/to/music
 
+# prefer albumartist or artist?
+artist=albumartist
+
 # where to save wallpaper
 wallpaper="$HOME/.config/kava/wallpaper"
 
