@@ -9,7 +9,7 @@ artist=albumartist
 # resolution of wallpaper
 res="1920x1080"
 
-# set your actual wallpaper here. covers will be embedded into it
+# set your actual wallpaper here. covers will be shown on top of it
 image="/path/to/image"
 
 # size of cover image
